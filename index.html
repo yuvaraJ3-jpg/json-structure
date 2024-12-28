@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compare JSON structure and data for validation. Input JSON and get the structure or compare it with predefined structures.">
+    <meta name="keywords" content="JSON, compare, structure, validation, web tool">
+    <meta name="author" content="Your Name">
+    <title>JSON Structure Validator</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        body{font-family:Arial,sans-serif;margin:0;padding:0;display:flex;flex-direction:column;justify-content:center;align-items:center;}.container{width:80%;margin:20px auto;}.row{display:flex;justify-content:space-between;margin-bottom:20px;}.column{width:48%;position:relative;}textarea,input{width:100%;height:200px;padding:10px;border:1px solid #ccc;border-radius:4px;font-size:16px;box-sizing:border-box;}button{padding:10px 20px;margin:20px auto;display:block;background-color:#28a745;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer;}.refresh-btn{margin:5px auto;padding:2px 3px;display:block;background-color:#dcdcdc;color:rgb(67,67,67);border:none;font-size:12px;cursor:pointer;}button:hover{background-color:#218838;}.refresh-btn:hover{background-color:#9b9b9b;}h3{text-align:center;margin:10px 0;}.result{margin-top:20px;padding:10px;background-color:#f8f9fa;border:1px solid #ccc;border-radius:4px;min-height:50px;}ul{list-style-type:none;padding:0;}ul li{margin:5px 0;}.copy-button{position:absolute;top:10px;right:10px;background-color:#007bff;color:white;padding:5px 10px;border:none;border-radius:4px;cursor:pointer;font-size:12px;}.copy-button:hover{background-color:#0056b3;}.fade-message{position:absolute;top:-15px;right:10px;color:#28a745;opacity:0;font-size:14px;transition:opacity .5s ease-in-out;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="column">
+                <h3>Input JSON</h3>
+                <textarea id="jsonInput" placeholder="Enter your JSON here"></textarea>
+            </div>
+            <div class="column">
+                <h3>Generated Structure</h3>
+                <textarea id="jsonStructure" readonly placeholder="The JSON structure will appear here"></textarea>
+                <button class="copy-button" id="copyBtn">Copy</button>
+                <span class="fade-message" id="copyMessage">Structure copied</span>
+            </div>
+        </div>
+        <div >
+            <button class="refresh-btn"  id="refreshBtn">Refresh</button>
+            <button id="getStructureBtn" style="margin-top: 5px;">Get Structure</button>
+        </div>
+        <div class="row">
+            <div class="column">
+                <h3>Input Structure</h3>
+                <textarea id="structureInput" placeholder="Paste your structure here"></textarea>
+            </div>
+            <div class="column">
+                <h3>Input JSON Data</h3>
+                <textarea id="dataInput" placeholder="Paste your JSON data here"></textarea>
+            </div>
+        </div>
+        <button id="compareBtn">Compare</button>
+        <div class="result">
+            <h3>Comparison Results</h3>
+            <ul id="resultList"></ul>
+        </div>
+    </div>
+    <div class="done-by">
+        <a href="https://www.linkedin.com/in/yuvaraja-d/" target="_blank" rel="noopener noreferrer">
+            <small>&#9829; yuvaraj d</small>
+        </a>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        function compareJsonStructure(e,t,n=""){const r=[],o=(e,t,n)=>{const c=(s=t,Array.isArray(s)?"array":null===s?"null":typeof s);var s;if(Array.isArray(e)){if("array"!==c)return void r.push(n||"root");t.length>0&&e.forEach((e=>{t.forEach(((t,r)=>{o(e,t,`${n}[${r}]`)}))}))}else if("object"==typeof e&&null!==e){if("object"!==c)return void r.push(n||"root");for(const c in e)t.hasOwnProperty(c)?o(e[c],t[c],`${n?n+".":""}${c}`):r.push(`${n?n+".":""}${c} is missing`)}else c!==e&&r.push(n||"root")};return o(e,t,n),r.length>0?r:"No mismatches found"}function getJsonStructure(e){const t=e=>{const t=new Set;let r=!0,o=null;return e.forEach(((e,c)=>{const s=n(e);var u,a;0===c?o=s:(u=o,a=s,JSON.stringify(u)!==JSON.stringify(a)&&(r=!1)),t.add(JSON.stringify(s))})),r&&null!==o?[o]:Array.from(t).map((e=>JSON.parse(e)))},n=e=>{if("object"!=typeof e||null===e)return r=e,Array.isArray(r)?"array":null===r?"null":typeof r;var r;if(Array.isArray(e)){const n=t(e);return 1===n.length?[n[0]]:n}const o={};for(const t in e)e.hasOwnProperty(t)&&(o[t]=n(e[t]));return o};return n(e)}function refreshPage(){location.reload()}function showConsoleMessage(){ const m = ["Hi there!...","for any queries please contact me. :)"];console.log(m.join('\n')); }document.getElementById("getStructureBtn").addEventListener("click",(function(){const e=document.getElementById("jsonInput").value;try{const t=getJsonStructure(JSON.parse(e));document.getElementById("jsonStructure").value=JSON.stringify(t,null,2)}catch(e){alert("Invalid JSON input. Please check your JSON syntax.")}})),document.getElementById("copyBtn").addEventListener("click",(function(){const e=document.getElementById("jsonStructure");e.select(),e.setSelectionRange(0,99999),document.execCommand("copy");const t=document.getElementById("copyMessage");t.style.opacity=1,setTimeout((()=>{t.style.opacity=0}),1500)})),document.getElementById("compareBtn").addEventListener("click",(function(){const e=document.getElementById("structureInput").value,t=document.getElementById("dataInput").value;try{const n=JSON.parse(e),r=compareJsonStructure(n,JSON.parse(t)),o=document.getElementById("resultList");if(o.innerHTML="",Array.isArray(r))r.forEach((e=>{const t=document.createElement("li");t.textContent=e,o.appendChild(t)}));else{const e=document.createElement("li");e.textContent="No mismatches found",o.appendChild(e)}}catch(e){alert("Invalid JSON input or structure. Please check your syntax.")}})),document.getElementById("refreshBtn").addEventListener("click",refreshPage);const checkConsoleOpen=()=>{const e=(new Date).getTime(),t=()=>{(new Date).getTime()-e>100?showConsoleMessage():setTimeout(t,100)};t()};checkConsoleOpen();
+    </script>
+</body>
+</html>
